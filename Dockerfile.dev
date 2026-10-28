@@ -1,0 +1,7 @@
+# Development image used by docker-compose.yml. The Dockerfile is the production one.
+FROM ruby:3.4.9
+
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install && gem install foreman

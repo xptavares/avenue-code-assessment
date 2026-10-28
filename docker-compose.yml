@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 2s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bash -c "rm -f tmp/pids/server.pid && bin/rails db:prepare && bin/dev"
+    # Run as the host user so files written to the mounted folder (tmp, log, coverage) aren't owned by root
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432
+      BINDING: 0.0.0.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    tty: true
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
