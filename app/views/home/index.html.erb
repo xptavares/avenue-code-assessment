@@ -4,31 +4,28 @@
   <p class="mb-4 text-red-600"><%= alert %></p>
 <% end %>
 
-<%= form_with scope: :address, url: forecast_path, method: :get, class: "space-y-4" do |f| %>
-  <div>
-    <%= f.label :street, "Street and number", class: "block mb-1" %>
-    <%= f.text_field :street, value: @address[:street], required: true, class: "w-full border rounded px-2 py-1" %>
+<div data-controller="tabs">
+  <div class="flex gap-6 border-b mb-6">
+    <button type="button" class="pb-2 border-b-2 border-black cursor-pointer" data-tabs-target="tab" data-action="tabs#select">Server-rendered</button>
+    <button type="button" class="pb-2 cursor-pointer" data-tabs-target="tab" data-action="tabs#select">JSON API</button>
   </div>
 
-  <div>
-    <%= f.label :city, class: "block mb-1" %>
-    <%= f.text_field :city, value: @address[:city], required: true, class: "w-full border rounded px-2 py-1" %>
+  <div data-tabs-target="panel">
+    <p class="mb-4 text-gray-500">Submits the form and Rails renders the forecast page.</p>
+
+    <%= form_with scope: :address, url: forecast_path, method: :get, class: "space-y-4" do |f| %>
+      <%= render "address_fields", f:, address: @address %>
+    <% end %>
   </div>
 
-  <div>
-    <%= f.label :state, class: "block mb-1" %>
-    <%= f.text_field :state, value: @address[:state], class: "w-full border rounded px-2 py-1" %>
-  </div>
+  <div data-tabs-target="panel" data-controller="forecast" hidden>
+    <p class="mb-4 text-gray-500">Fetches the forecast as JSON and renders it here with JavaScript.</p>
 
-  <div>
-    <%= f.label :country, class: "block mb-1" %>
-    <%= f.text_field :country, value: @address[:country], class: "w-full border rounded px-2 py-1" %>
-  </div>
+    <%= form_with scope: :address, url: forecast_path, method: :get, namespace: "json", class: "space-y-4",
+          data: { forecast_target: "form", action: "forecast#submit" } do |f| %>
+      <%= render "address_fields", f:, address: @address %>
+    <% end %>
 
-  <div>
-    <%= f.label :postalcode, "Postal code", class: "block mb-1" %>
-    <%= f.text_field :postalcode, value: @address[:postalcode], class: "w-full border rounded px-2 py-1" %>
+    <div class="mt-8" data-forecast-target="result"></div>
   </div>
-
-  <%= f.submit "Get forecast", name: nil, class: "border rounded px-4 py-1 cursor-pointer" %>
-<% end %>
+</div>

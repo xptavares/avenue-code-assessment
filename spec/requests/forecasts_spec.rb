@@ -94,4 +94,68 @@ RSpec.describe "Forecasts", type: :request do
       end
     end
   end
+
+  describe "GET /forecast.json" do
+    context "when the lookup succeeds" do
+      before do
+        allow(AddressForecastService).to receive(:call).with(address)
+          .and_return(AddressForecastService::Result.new(forecast:, cached: true))
+      end
+
+      it "returns the forecast summary" do
+        get forecast_path(format: :json), params: { address: address_params }
+
+        expect(response.parsed_body).to include(
+          "address" => "123 Rua das Acácias, Vila Esperança, 12345-678", "cached" => true, "current_temperature" => 21.4
+        )
+      end
+
+      it "returns the days" do
+        get forecast_path(format: :json), params: { address: address_params }
+
+        expect(response.parsed_body["days"].first).to include(
+          "date" => "2026-01-15", "high" => 27.0, "low" => 18.2, "precipitation_probability" => 25, "precipitation_sum" => 1.2
+        )
+      end
+
+      it "returns the hours of each day" do
+        get forecast_path(format: :json), params: { address: address_params }
+
+        expect(response.parsed_body["days"].first["hours"].first).to include(
+          "temperature" => 26.1, "precipitation_probability" => 25, "precipitation" => 0.8
+        )
+      end
+    end
+
+    context "when street or city is missing" do
+      it "returns 422 with an error message", :aggregate_failures do
+        get forecast_path(format: :json), params: { address: { street: "123 Rua das Acácias" } }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body).to eq("error" => "Street and city are required.")
+      end
+    end
+
+    context "when the address is not found" do
+      before { allow(AddressForecastService).to receive(:call).and_raise(Geocoding::NotFoundError) }
+
+      it "returns 404 with an error message", :aggregate_failures do
+        get forecast_path(format: :json), params: { address: address_params }
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.parsed_body).to eq("error" => "We couldn't find that address. Check it and try again.")
+      end
+    end
+
+    context "when an external service fails" do
+      before { allow(AddressForecastService).to receive(:call).and_raise(Geocoding::Error) }
+
+      it "returns 503 with an error message", :aggregate_failures do
+        get forecast_path(format: :json), params: { address: address_params }
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body).to eq("error" => "The forecast is unavailable right now. Please try again later.")
+      end
+    end
+  end
 end

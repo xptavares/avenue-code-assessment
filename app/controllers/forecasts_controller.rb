@@ -7,12 +7,12 @@ class ForecastsController < ApplicationController
     @cached = result.cached
     @today, *@next_days = @forecast.days
   rescue ArgumentError
-    back_to_form "Street and city are required."
+    fail_with "Street and city are required.", :unprocessable_content
   rescue Geocoding::NotFoundError
-    back_to_form "We couldn't find that address. Check it and try again."
+    fail_with "We couldn't find that address. Check it and try again.", :not_found
   rescue Geocoding::Error, Forecast::Error => e
     Rails.logger.error("Forecast lookup failed: #{e.message}")
-    back_to_form "The forecast is unavailable right now. Please try again later."
+    fail_with "The forecast is unavailable right now. Please try again later.", :service_unavailable
   end
 
   private
@@ -21,7 +21,10 @@ class ForecastsController < ApplicationController
     params.fetch(:address, {}).permit(*Geocoding::Address.members)
   end
 
-  def back_to_form(message)
-    redirect_to root_path(address: address_params.to_h), alert: message
+  def fail_with(message, status)
+    respond_to do |format|
+      format.html { redirect_to root_path(address: address_params.to_h), alert: message }
+      format.json { render json: { error: message }, status: }
+    end
   end
 end

@@ -19,5 +19,17 @@ RSpec.describe "Home", type: :request do
 
       expect(response.body).to include(%(action="#{forecast_path}"))
     end
+
+    it "renders both tabs" do
+      get root_path
+
+      expect(response.body).to include("Server-rendered", "JSON API")
+    end
+
+    it "wires the JSON API form to the forecast controller" do
+      get root_path
+
+      expect(response.body).to include('data-action="forecast#submit"', 'id="json_address_street"')
+    end
   end
 end

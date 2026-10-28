@@ -1,0 +1,26 @@
+<div>
+  <%= f.label :street, "Street and number", class: "block mb-1" %>
+  <%= f.text_field :street, value: address[:street], required: true, class: "w-full border rounded px-2 py-1" %>
+</div>
+
+<div>
+  <%= f.label :city, class: "block mb-1" %>
+  <%= f.text_field :city, value: address[:city], required: true, class: "w-full border rounded px-2 py-1" %>
+</div>
+
+<div>
+  <%= f.label :state, class: "block mb-1" %>
+  <%= f.text_field :state, value: address[:state], class: "w-full border rounded px-2 py-1" %>
+</div>
+
+<div>
+  <%= f.label :country, class: "block mb-1" %>
+  <%= f.text_field :country, value: address[:country], class: "w-full border rounded px-2 py-1" %>
+</div>
+
+<div>
+  <%= f.label :postalcode, "Postal code", class: "block mb-1" %>
+  <%= f.text_field :postalcode, value: address[:postalcode], class: "w-full border rounded px-2 py-1" %>
+</div>
+
+<%= f.submit "Get forecast", name: nil, class: "border rounded px-4 py-1 cursor-pointer" %>
