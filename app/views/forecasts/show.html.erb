@@ -3,7 +3,15 @@
 <h1 class="text-2xl font-bold mb-2">Forecast for <%= @address %></h1>
 
 <% if @cached %>
-  <p class="mb-2 text-gray-500">Cached result. Forecasts are refreshed every 30 minutes.</p>
+  <div class="my-4 rounded border border-yellow-400 bg-yellow-100 p-3">
+    <p class="font-semibold">Cached result</p>
+    <p>Fetched <%= time_ago_in_words(@fetched_at) %> ago. Refreshes in <%= distance_of_time_in_words(Time.current, @expires_at) %>.</p>
+  </div>
+<% else %>
+  <div class="my-4 rounded border border-green-400 bg-green-100 p-3">
+    <p class="font-semibold">Fresh result</p>
+    <p>Fetched just now from the weather service.</p>
+  </div>
 <% end %>
 
 <h2 class="text-xl font-semibold mt-6 mb-2">Today, <%= l(@today.date, format: :long) %></h2>

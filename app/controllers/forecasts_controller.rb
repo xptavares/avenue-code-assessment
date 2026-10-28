@@ -5,6 +5,8 @@ class ForecastsController < ApplicationController
 
     @forecast = result.forecast
     @cached = result.cached
+    @fetched_at = result.fetched_at
+    @expires_at = result.expires_at
     @today, *@next_days = @forecast.days
   rescue ArgumentError
     fail_with "Street and city are required.", :unprocessable_content

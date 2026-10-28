@@ -1,5 +1,7 @@
 json.address @address.to_s
 json.cached @cached
+json.fetched_at @fetched_at
+json.expires_at @expires_at
 json.current_temperature @forecast.current_temperature
 
 json.days @forecast.days do |day|

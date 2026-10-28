@@ -20,7 +20,7 @@ RSpec.describe "Forecasts", type: :request do
     context "when the lookup succeeds" do
       before do
         allow(AddressForecastService).to receive(:call).with(address)
-          .and_return(AddressForecastService::Result.new(forecast:, cached: false))
+          .and_return(AddressForecastService::Result.new(forecast:, cached: false, fetched_at: Time.current))
       end
 
       it "shows today's forecast" do
@@ -41,22 +41,24 @@ RSpec.describe "Forecasts", type: :request do
         expect(response.body).to include("Fri, Jan 16", "<td>80%</td>")
       end
 
-      it "does not show the cache notice for a fresh result" do
+      it "marks the result as fresh" do
         get forecast_path, params: { address: address_params }
 
-        expect(response.body).not_to include("Cached result")
+        expect(response.body).to include("Fresh result")
       end
     end
 
     context "when the result comes from the cache" do
       before do
-        allow(AddressForecastService).to receive(:call).and_return(AddressForecastService::Result.new(forecast:, cached: true))
+        freeze_time
+        allow(AddressForecastService).to receive(:call)
+          .and_return(AddressForecastService::Result.new(forecast:, cached: true, fetched_at: 12.minutes.ago))
       end
 
-      it "shows the cache notice" do
+      it "shows when it was fetched and when it refreshes" do
         get forecast_path, params: { address: address_params }
 
-        expect(response.body).to include("Cached result")
+        expect(response.body).to include("Cached result", "Fetched 12 minutes ago. Refreshes in 18 minutes.")
       end
     end
 
@@ -99,7 +101,7 @@ RSpec.describe "Forecasts", type: :request do
     context "when the lookup succeeds" do
       before do
         allow(AddressForecastService).to receive(:call).with(address)
-          .and_return(AddressForecastService::Result.new(forecast:, cached: true))
+          .and_return(AddressForecastService::Result.new(forecast:, cached: true, fetched_at: Time.zone.parse("2026-01-15 14:00")))
       end
 
       it "returns the forecast summary" do
@@ -107,6 +109,14 @@ RSpec.describe "Forecasts", type: :request do
 
         expect(response.parsed_body).to include(
           "address" => "123 Rua das Acácias, Vila Esperança, 12345-678", "cached" => true, "current_temperature" => 21.4
+        )
+      end
+
+      it "returns when the forecast was fetched and when it expires" do
+        get forecast_path(format: :json), params: { address: address_params }
+
+        expect(response.parsed_body).to include(
+          "fetched_at" => "2026-01-15T14:00:00.000Z", "expires_at" => "2026-01-15T14:30:00.000Z"
         )
       end
 

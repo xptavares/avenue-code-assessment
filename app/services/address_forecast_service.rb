@@ -1,7 +1,11 @@
 class AddressForecastService < BaseService
   CACHE_TTL = 30.minutes
 
-  Result = Data.define(:forecast, :cached)
+  Result = Data.define(:forecast, :cached, :fetched_at) do
+    def expires_at
+      fetched_at + CACHE_TTL
+    end
+  end
 
   def initialize(address, geocoder: GeocodingService, forecaster: ForecastService, cache: Rails.cache)
     @address = address
@@ -13,15 +17,15 @@ class AddressForecastService < BaseService
   def call
     # Prefer the postal code the user typed so a cache hit skips geocoding entirely
     postal_code = @address.postalcode || location.postal_code
-    return Result.new(forecast: fetch_forecast, cached: false) if postal_code.nil?
+    return Result.new(**fresh_entry, cached: false) if postal_code.nil?
 
     cached = true
-    forecast = @cache.fetch(cache_key(postal_code), expires_in: CACHE_TTL) do
+    entry = @cache.fetch(cache_key(postal_code), expires_in: CACHE_TTL) do
       cached = false
-      fetch_forecast
+      fresh_entry
     end
 
-    Result.new(forecast:, cached:)
+    Result.new(**entry, cached:)
   end
 
   private
@@ -30,8 +34,8 @@ class AddressForecastService < BaseService
     @location ||= @geocoder.call(@address)
   end
 
-  def fetch_forecast
-    @forecaster.call(latitude: location.latitude, longitude: location.longitude)
+  def fresh_entry
+    { forecast: @forecaster.call(latitude: location.latitude, longitude: location.longitude), fetched_at: Time.current }
   end
 
   def cache_key(postal_code)

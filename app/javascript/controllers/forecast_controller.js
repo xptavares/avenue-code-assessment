@@ -28,7 +28,15 @@ export default class extends Controller {
 
     this.resultTarget.innerHTML = `
       <h2 class="text-2xl font-bold mb-2">Forecast for ${escapeHTML(data.address)}</h2>
-      ${data.cached ? `<p class="mb-2 text-gray-500">Cached result. Forecasts are refreshed every 30 minutes.</p>` : ""}
+      ${data.cached ? `
+        <div class="my-4 rounded border border-yellow-400 bg-yellow-100 p-3">
+          <p class="font-semibold">Cached result</p>
+          <p>Fetched ${minutes(Date.now() - Date.parse(data.fetched_at))} ago. Refreshes in ${minutes(Date.parse(data.expires_at) - Date.now())}.</p>
+        </div>` : `
+        <div class="my-4 rounded border border-green-400 bg-green-100 p-3">
+          <p class="font-semibold">Fresh result</p>
+          <p>Fetched just now from the weather service.</p>
+        </div>`}
 
       <h3 class="text-xl font-semibold mt-6 mb-2">Today, ${formatDate(today.date, { month: "long", day: "numeric", year: "numeric" })}</h3>
       <p>Now: ${temperature(data.current_temperature)}</p>
@@ -73,6 +81,12 @@ export default class extends Controller {
   showError(message) {
     this.resultTarget.innerHTML = `<p class="text-red-600">${escapeHTML(message)}</p>`
   }
+}
+
+function minutes(milliseconds) {
+  const count = Math.round(milliseconds / 60000)
+  if (count < 1) return "less than a minute"
+  return count === 1 ? "1 minute" : `${count} minutes`
 }
 
 function temperature(value) {
