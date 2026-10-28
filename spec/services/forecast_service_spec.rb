@@ -7,7 +7,7 @@ RSpec.describe ForecastService do
   let(:latitude) { -10.5432 }
   let(:longitude) { -40.2109 }
   let(:result) do
-    Forecast::Result.new(current_temperature: 21.4, days: [ Forecast::Day.new(date: Date.new(2026, 1, 15), high: 27.0, low: 18.2) ])
+    Forecast::Result.new(current_temperature: 21.4, days: [ Forecast::Day.new(date: Date.new(2026, 1, 15), high: 27.0, low: 18.2, precipitation_probability: 25, precipitation_sum: 1.2, hours: []) ])
   end
 
   describe "#call" do

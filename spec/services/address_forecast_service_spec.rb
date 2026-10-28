@@ -9,7 +9,7 @@ RSpec.describe AddressForecastService do
   let(:address) { Geocoding::Address.new(street: "123 Rua das Acácias", city: "Vila Esperança", postalcode: "12345-678") }
   let(:location) { Geocoding::Result.new(latitude: -10.5432, longitude: -40.2109, postal_code: "12345-678") }
   let(:forecast) do
-    Forecast::Result.new(current_temperature: 21.4, days: [ Forecast::Day.new(date: Date.new(2026, 1, 15), high: 27.0, low: 18.2) ])
+    Forecast::Result.new(current_temperature: 21.4, days: [ Forecast::Day.new(date: Date.new(2026, 1, 15), high: 27.0, low: 18.2, precipitation_probability: 25, precipitation_sum: 1.2, hours: []) ])
   end
 
   before do
