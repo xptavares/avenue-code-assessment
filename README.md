@@ -90,3 +90,7 @@ Errors come back as JSON with a status code: 422 when street or city is missing,
 - **Nominatim allows 1 request per second.** That's fine for this project, and the cache helps, but a real app with more traffic would need a paid geocoding service or its own Nominatim server.
 - **Temperatures are in Celsius.** Open-Meteo can return Fahrenheit by changing one parameter.
 - **The JavaScript has no automated tests.** It would need system specs with a browser running in CI.
+
+## Next steps
+
+- **Use the browser location.** A "Use my location" button could get the coordinates with `navigator.geolocation`. The browser only gives latitude and longitude, so the app would need a reverse geocoding call (Nominatim has a `/reverse` endpoint) to find the postal code and keep using the same cache.
