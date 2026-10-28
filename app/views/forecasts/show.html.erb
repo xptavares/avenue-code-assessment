@@ -1,22 +1,22 @@
-<p><%= link_to "New search", root_path %></p>
+<p class="mb-4"><%= link_to "New search", root_path, class: "underline" %></p>
 
-<h1>Forecast for <%= @address %></h1>
+<h1 class="text-2xl font-bold mb-2">Forecast for <%= @address %></h1>
 
 <% if @cached %>
-  <p>Cached result. Forecasts are refreshed every 30 minutes.</p>
+  <p class="mb-2 text-gray-500">Cached result. Forecasts are refreshed every 30 minutes.</p>
 <% end %>
 
-<h2>Today, <%= l(@today.date, format: :long) %></h2>
+<h2 class="text-xl font-semibold mt-6 mb-2">Today, <%= l(@today.date, format: :long) %></h2>
 
 <p>Now: <%= temperature(@forecast.current_temperature) %></p>
 <p>High: <%= temperature(@today.high) %> / Low: <%= temperature(@today.low) %></p>
 <p>Chance of rain: <%= @today.precipitation_probability %>% (<%= @today.precipitation_sum %> mm)</p>
 
-<h3>Hourly</h3>
+<h3 class="text-lg font-semibold mt-6 mb-2">Hourly</h3>
 
-<table>
+<table class="w-full text-left">
   <thead>
-    <tr>
+    <tr class="border-b">
       <th>Hour</th>
       <th>Temperature</th>
       <th>Chance of rain</th>
@@ -25,7 +25,7 @@
   </thead>
   <tbody>
     <% @today.hours.each do |hour| %>
-      <tr>
+      <tr class="border-b">
         <td><%= hour.time.strftime("%H:%M") %></td>
         <td><%= temperature(hour.temperature) %></td>
         <td><%= hour.precipitation_probability %>%</td>
@@ -35,11 +35,11 @@
   </tbody>
 </table>
 
-<h2>Next days</h2>
+<h2 class="text-xl font-semibold mt-6 mb-2">Next days</h2>
 
-<table>
+<table class="w-full text-left">
   <thead>
-    <tr>
+    <tr class="border-b">
       <th>Date</th>
       <th>High</th>
       <th>Low</th>
@@ -49,7 +49,7 @@
   </thead>
   <tbody>
     <% @next_days.each do |day| %>
-      <tr>
+      <tr class="border-b">
         <td><%= l(day.date, format: "%a, %b %-d") %></td>
         <td><%= temperature(day.high) %></td>
         <td><%= temperature(day.low) %></td>

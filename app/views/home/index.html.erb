@@ -1,34 +1,34 @@
-<h1>Weather Forecast</h1>
+<h1 class="text-2xl font-bold mb-6">Weather Forecast</h1>
 
 <% if alert %>
-  <p><%= alert %></p>
+  <p class="mb-4 text-red-600"><%= alert %></p>
 <% end %>
 
-<%= form_with scope: :address, url: forecast_path, method: :get do |f| %>
+<%= form_with scope: :address, url: forecast_path, method: :get, class: "space-y-4" do |f| %>
   <div>
-    <%= f.label :street, "Street and number" %>
-    <%= f.text_field :street, value: @address[:street], required: true %>
+    <%= f.label :street, "Street and number", class: "block mb-1" %>
+    <%= f.text_field :street, value: @address[:street], required: true, class: "w-full border rounded px-2 py-1" %>
   </div>
 
   <div>
-    <%= f.label :city %>
-    <%= f.text_field :city, value: @address[:city], required: true %>
+    <%= f.label :city, class: "block mb-1" %>
+    <%= f.text_field :city, value: @address[:city], required: true, class: "w-full border rounded px-2 py-1" %>
   </div>
 
   <div>
-    <%= f.label :state %>
-    <%= f.text_field :state, value: @address[:state] %>
+    <%= f.label :state, class: "block mb-1" %>
+    <%= f.text_field :state, value: @address[:state], class: "w-full border rounded px-2 py-1" %>
   </div>
 
   <div>
-    <%= f.label :country %>
-    <%= f.text_field :country, value: @address[:country] %>
+    <%= f.label :country, class: "block mb-1" %>
+    <%= f.text_field :country, value: @address[:country], class: "w-full border rounded px-2 py-1" %>
   </div>
 
   <div>
-    <%= f.label :postalcode, "Postal code" %>
-    <%= f.text_field :postalcode, value: @address[:postalcode] %>
+    <%= f.label :postalcode, "Postal code", class: "block mb-1" %>
+    <%= f.text_field :postalcode, value: @address[:postalcode], class: "w-full border rounded px-2 py-1" %>
   </div>
 
-  <%= f.submit "Get forecast", name: nil %>
+  <%= f.submit "Get forecast", name: nil, class: "border rounded px-4 py-1 cursor-pointer" %>
 <% end %>
