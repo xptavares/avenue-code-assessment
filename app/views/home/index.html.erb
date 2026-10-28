@@ -1,0 +1,34 @@
+<h1>Weather Forecast</h1>
+
+<% if alert %>
+  <p><%= alert %></p>
+<% end %>
+
+<%= form_with scope: :address, url: forecast_path, method: :get do |f| %>
+  <div>
+    <%= f.label :street, "Street and number" %>
+    <%= f.text_field :street, value: @address[:street], required: true %>
+  </div>
+
+  <div>
+    <%= f.label :city %>
+    <%= f.text_field :city, value: @address[:city], required: true %>
+  </div>
+
+  <div>
+    <%= f.label :state %>
+    <%= f.text_field :state, value: @address[:state] %>
+  </div>
+
+  <div>
+    <%= f.label :country %>
+    <%= f.text_field :country, value: @address[:country] %>
+  </div>
+
+  <div>
+    <%= f.label :postalcode, "Postal code" %>
+    <%= f.text_field :postalcode, value: @address[:postalcode] %>
+  </div>
+
+  <%= f.submit "Get forecast", name: nil %>
+<% end %>

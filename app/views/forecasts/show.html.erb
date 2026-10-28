@@ -1,0 +1,61 @@
+<p><%= link_to "New search", root_path %></p>
+
+<h1>Forecast for <%= @address %></h1>
+
+<% if @cached %>
+  <p>Cached result. Forecasts are refreshed every 30 minutes.</p>
+<% end %>
+
+<h2>Today, <%= l(@today.date, format: :long) %></h2>
+
+<p>Now: <%= temperature(@forecast.current_temperature) %></p>
+<p>High: <%= temperature(@today.high) %> / Low: <%= temperature(@today.low) %></p>
+<p>Chance of rain: <%= @today.precipitation_probability %>% (<%= @today.precipitation_sum %> mm)</p>
+
+<h3>Hourly</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Hour</th>
+      <th>Temperature</th>
+      <th>Chance of rain</th>
+      <th>Precipitation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @today.hours.each do |hour| %>
+      <tr>
+        <td><%= hour.time.strftime("%H:%M") %></td>
+        <td><%= temperature(hour.temperature) %></td>
+        <td><%= hour.precipitation_probability %>%</td>
+        <td><%= hour.precipitation %> mm</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>Next days</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Chance of rain</th>
+      <th>Precipitation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @next_days.each do |day| %>
+      <tr>
+        <td><%= l(day.date, format: "%a, %b %-d") %></td>
+        <td><%= temperature(day.high) %></td>
+        <td><%= temperature(day.low) %></td>
+        <td><%= day.precipitation_probability %>%</td>
+        <td><%= day.precipitation_sum %> mm</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
